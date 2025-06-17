@@ -1,0 +1,23 @@
+Collation
+
+SQL Server by default is case insensitive. But if we need to enforce case sensitivity on a column, while executing a query, we need to change the Collation of the column. The default collation of SQL Server is SQL_Latin1_General_CP1_CI_AS, which is case insensitive.
+
+We can change the collation of a column using the COLLATE clause.
+
+Example
+
+SELECT * FROM MY_TABLE
+WHERE COLUMN1 = ‘axVty’
+
+If the same query is rewritten as:
+
+SELECT * FROM MY_TABLE
+WHERE COLUMN1 COLLATE Latin1_General_CS_AS = ‘axVty’
+
+this will enforce case sensitivity on the search on Column1 column.
+
+If we need to permanently change a collation of a particular column, we can alter the table as:
+
+ALTER TABLE MY_TABLE
+ALTER COLUMN COLUMN1 VARCHAR(20)
+COLLATE Latin1_General_CS_AS
