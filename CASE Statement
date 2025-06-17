@@ -1,0 +1,66 @@
+We may stumble upon the CASE statements sometimes, as there are two implementations of the same in SQL Server. So, there may arise a question of when to use what. The answer depends on the type of query you want to write.
+
+
+Following is the clarification:
+
+Simple Expression
+
+A Simple Expression checks a single expression (condition on a single column) with multiple values.
+
+For example, we have an EMPLOYEE_RATINGS table having the columns EMPLOYEE_ID and EMPLOYEE_RATING. We want to know what each rating symbolizes. For that we may use the simple case expression as we need to check for multiple values of the same column.
+
+SELECT 
+CASE EMPLOYEE_RATING
+WHEN 1 THEN ‘BAD’
+WHEN 2 THEN ‘FAIR’
+WHEN 3 THEN ‘GOOD’
+WHEN 4 THEN ‘EXCELLENT’
+ELSE ‘NOT RATED’
+END
+FROM EMPLOYEE_RATINGS
+WHERE EMPLOYEE_ID = ‘1234’
+
+Remembering Tip: The column name is used between CASE and WHEN.
+
+
+Searched Expression
+
+When we need to perform comparisons using operators (arithmetic/logical/etc) or/and we need to involve conditions on multiple columns, we need to use the Searched Expression.
+
+For example, we have a table consisting of students and their marks and on the basis of marks we need to ascertain the grade for each student, we need to use operators on MARKS column.
+
+SELECT STUDENT_ID, STUDENT_NAME,
+‘GRADE’ =
+CASE
+WHEN MARKS >=90 THEN ‘A’
+WHEN MARKS >= 80 AND MARKS < 90 THEN ‘B’
+WHEN MARKS >= 70 AND MARKS < 80 THEN ‘C’
+WHEN MARKS >= 60 AND MARKS < 70 THEN ‘D’
+WHEN MARKS >= 50 AND MARKS < 60 THEN ‘E’
+ELSE ‘F’
+END
+FROM STUDENT_RESULT
+
+ Remembering Tip: The column name comes after CASE and WHEN.
+
+
+Nested CASE Expression
+
+Another implementation of the same type is when we need to use multiple columns in a CASE expression.  This problem will need the use of Nested CASE statements. This is needed when we have the data for a single entity in more than one column, but in a single row.
+
+For example, we have a Member score table, having Member id and columns like Level1, Level2, Level3. Each column keeps the score of the respective levels. As the member plays a game and completes a level, the score will be updated against his id at the appropriate column. If any level has a NULL value, it is assumed that the member has not cleared the particular level and any of the further levels. We need to find out the skill level of each member.
+
+ 
+SELECT ‘MEMBER SKILL’ =
+CASE WHEN LEVEL3 IS NOT NULL THEN ‘PRO’
+ELSE CASE WHEN LEVEL2 IS NOT NULL THEN ‘STANDARD’
+ELSE CASE WHEN LEVEL1 IS NOT NULL THEN ‘ROOKIE’
+ELSE ‘NOT STARTED’
+END
+END
+END
+FROM MEMBER_LEVEL_SCORES
+
+Just remember to put an END clause for each of the CASE conditions.
+
+Case statement is not just estricted to Select statements. They can obviously be used in UPDATE, SET, ORDER BY and HAVING clauses.
