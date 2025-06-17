@@ -1,0 +1,22 @@
+Sometimes, we may need to write a query which must return a single value. Tis situation arises when the query’s output is used in subsequent tasks in a solution, for ex. SSIS.
+
+If we write a general select query, there may be some conditions, which may return nothing for the run; while the wizard or task, which runs the query, always expects a single value; in which case, no data will lead to faliure.
+
+Thus, we need to return a default value if the query returns nothing. The following example demonstrates how to return a default value from a query if nothing is found:
+
+We need to select the daily currency conversion rate from a table. If for any day, there is no conversion rate data present in the table, the query would return no data. Thus, to prevent such situation, we need to use a UNION ALL and NOT EXISTS clauses to return a default value.
+
+SELECT CONVERSION_RATE RATE
+FROM CURRECNY_CONVERSION
+WHERE FROM_CURRENCY = ‘EUR’
+AND TO_CURRENCY = ‘USD’
+AND CONVERSION_DATE = GETDATE()
+UNION ALL
+SELECT 1 AS RATE
+WHERE NOT EXISTS (
+SELECT CONVERSION_RATE RATE
+FROM CURRECNY_CONVERSION
+WHERE FROM_CURRENCY = ‘EUR’
+AND TO_CURRENCY = ‘USD’
+AND CONVERSION_DATE = GETDATE()
+)
