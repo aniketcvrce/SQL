@@ -1,0 +1,50 @@
+Scenario
+
+Within a SQL Procedure, we usually go for a Cursor if an iteration is required.
+
+But cursors might not be used in every case; especially in the Synapse database where Cursors are not supported. Thus, need to try out alternatives to Cursor.
+
+This is achieved by using a temporary table and a While loop.
+
+Code
+
+/*create a temporary table */
+
+IF OBJECT_ID(N’tempdb..#tmpTables’) IS NOT NULL
+BEGIN
+DROP TABLE #tmpTables
+END
+
+create table #tmpTables
+with (
+DISTRIBUTION = ROUND_ROBIN
+)
+AS select distinct  [GROUP] from [YOUR TABLE] ;
+
+/*set some counter values */
+
+declare @group varchar(100)
+DECLARE @counter int = 1
+DECLARE @recordCount int = (SELECT COUNT(1) from #tmpTables)
+
+/*while loop for the length of the row count of the temp table */
+
+WHILE @counter <= @recordCount
+
+BEGIN 
+
+/*select the value from temp table for the nth iteration */
+
+
+SET @group = (SELECT [GROUP]
+      FROM(SELECT *, ROW_NUMBER() OVER(ORDER BY [GROUP]) AS RN
+      FROM #tmpTables) as T
+      WHERE RN = @counter)
+
+      PRINT @group
+
+      SET @counter = @counter + 1 
+
+/*do your business logic here and can use the iteration value @group */
+
+END
