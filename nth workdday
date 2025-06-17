@@ -1,0 +1,27 @@
+--find the nth workday of any month-year
+
+--parameters
+DECLARE @year INT
+DECLARE @month int
+DECLARE @n INT
+
+--Recursive CTE to generate dates of the month
+WITH Dates AS (
+  SELECT DATEFROMPARTS(@year, @month, 1) AS WorkDate
+  UNION ALL
+  SELECT DATEADD(DAAY, 1, WorkDate)
+  FROM Dates
+  WHERE MONTH(DATEADD(DAY, 1, WorkDate)) = @month
+),
+WorkingDays AS (
+  SELECT WorkDate
+  FROM Dates
+  WHERE DATEPART(WEEKDAY, WorkDate) NOT in (1,7)  --excluding Sat, Sun
+)
+
+select top 1 * from
+(
+SELECT WorkDate from WorkingDays
+ORDER BY WorkDate
+OFFSET (@n - 1) ROWS
+)x
